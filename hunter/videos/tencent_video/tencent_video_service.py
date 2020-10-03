@@ -9,8 +9,8 @@ from contextlib import suppress
 
 from public import BackEndPort
 from utils import LogManager, MongoDBManager, RequestManager
-from videos import VideoDetailData, VideoCategory, BaseVideo, Code, DownloadStatus
-from videos.tencent_video import get_cvid
+from hunter.videos import VideoDetailData, VideoCategory, BaseVideo, Code, DownloadStatus
+from hunter.videos.tencent_video import get_cvid
 
 logger = LogManager('video_tencent_video_service').file()
 

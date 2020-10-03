@@ -6,8 +6,8 @@ import time
 
 from public import RabbitMQQueue
 from utils import RabbitMQConsumer, MongoDBManager, m3u8_download, remove_special_characters, LogManager
-from videos import DownloadStatus, DownloadType, get_storage_path, get_provider, Provider
-from videos.tencent_video.tencent_video_service import TencentVideoService
+from hunter.videos import DownloadStatus, DownloadType, get_storage_path, get_provider, Provider
+from hunter.videos.tencent_video.tencent_video_service import TencentVideoService
 
 video_db = MongoDBManager().video
 logger = LogManager('video_download').file()

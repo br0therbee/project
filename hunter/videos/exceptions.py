@@ -5,7 +5,7 @@
 __all__ = ['VideoException', 'CookieError', 'NeedPayError', 'ParseError']
 
 from utils import DingTalk
-from videos import Code
+from hunter.videos import Code
 
 
 class VideoException(Exception):

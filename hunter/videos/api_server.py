@@ -6,8 +6,8 @@ from flask import Flask, request, jsonify
 
 from public import BackEndPort
 from utils import LogManager
-from videos import Code, VideoException
-from videos.tencent_video.decrypt.get_download_url import DownloadURL
+from hunter.videos import Code, VideoException
+from hunter.videos.tencent_video.decrypt.get_download_url import DownloadURL
 
 app = Flask('video_api_server')
 logger = LogManager('video_api_server').file()

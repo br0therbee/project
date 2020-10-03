@@ -18,8 +18,8 @@ from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 
 from utils import LogManager, RequestManager
-from videos import account
-from videos.tencent_video.login.captcha import Captcha
+from hunter.videos import account
+from hunter.videos.tencent_video.login.captcha import Captcha
 
 logger = LogManager('tencent_video_login').file()
 
