@@ -47,6 +47,7 @@ class QQLogin(object):
     def _create(self):
         options = webdriver.ChromeOptions()
         options.add_argument('--headless')
+        options.add_argument('--no-sandbox')
         options.add_argument('--start-maximized')
         options.add_argument('--disable-dev-shm-usage')
         self.driver = webdriver.Chrome(executable_path=self._executable_path, options=options)
