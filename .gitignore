@@ -1,0 +1,12 @@
+__pycache__/
+.idea/
+*.env
+*test*
+*.log*
+log/
+apidoc/
+*.cfg
+*.png
+*.jpg
+*cookie*
+*privacy*
