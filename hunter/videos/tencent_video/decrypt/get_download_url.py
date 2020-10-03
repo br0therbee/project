@@ -14,7 +14,7 @@ import execjs
 from utils import RequestManager, LogManager, ciphers
 from hunter.videos import ParseError, CookieError, DownloadType, Provider
 from hunter.videos.tencent_video import get_cvid, VideoType
-from hunter.videos.tencent_video.decrypt.privacy import get_tkn, get_unid
+from privacy import get_tkn, get_unid
 from hunter.videos.tencent_video.login.mock import QQLogin
 
 logger = LogManager('video_tencent_video_get_download_url').file()
