@@ -2,7 +2,6 @@
 # @Author      : BrotherBe
 # @Time        : 2020/9/10 22:29
 # @Version     : Python 3.8.5
-import copy
 import json
 import time
 from pathlib import Path
@@ -14,7 +13,7 @@ import execjs
 from utils import RequestManager, LogManager, ciphers
 from hunter.videos import ParseError, CookieError, DownloadType, Provider
 from hunter.videos.tencent_video import get_cvid, VideoType
-from privacy import get_tkn, get_unid
+from privacy import get_unid
 from hunter.videos.tencent_video.login.mock import QQLogin
 
 logger = LogManager('video_tencent_video_get_download_url').file()
@@ -62,12 +61,12 @@ class DownloadURL(object):
         opid = cookie.get('vqq_openid', '')
         atkn = cookie.get('vqq_access_token', '')
         uid = cookie.get('vqq_vuserid', '')
-        # tkn = cookie.get('vusession', '')
-        tkn = get_tkn()
+        tkn = cookie.get('vqq_vusession', '')
+        # tkn = get_tkn()
         appid = cookie.get('vqq_appid', '')
 
         cur_time = int(time.time())
-        auth_ext = {
+        logintoken = {
             "main_login": "qq",
             "openid": opid,
             "appid": appid,
@@ -75,8 +74,6 @@ class DownloadURL(object):
             "vuserid": uid,
             "vusession": tkn
         }
-        logintoken = copy.deepcopy(auth_ext)
-        logintoken['appid'] = appid
         sdtfrom = 'v1010'
         adparam = {
             "ad_type": "LD|KB|PVL",
