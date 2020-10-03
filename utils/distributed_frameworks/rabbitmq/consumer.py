@@ -26,13 +26,13 @@ class RabbitMQConsumer(BaseConsumer):
     def _consume(self):
         self.connection = PikaConnection().connection
         channel = self.connection.channel()
+        self._pool.submit(self.heartbeat)
         channel.queue_declare(queue=self._name, durable=True)
         channel.basic_qos(prefetch_count=self._concurrent_num)
         channel.basic_consume(
             queue=self._name,
             on_message_callback=self._callback,
         )
-        self._pool.submit(self.heartbeat)
         channel.start_consuming()
 
     def _confirm(self, kw):
