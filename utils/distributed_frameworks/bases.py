@@ -44,7 +44,7 @@ class BaseConsumer(metaclass=abc.ABCMeta):
 
         self._is_block = is_block
         self._time_periods = time_periods
-        self.logger = LogManager(self._name).file(level)
+        self.logger = LogManager(f"{self._name}_consumer").file(level)
         self._count = 0
 
     @classmethod
@@ -159,7 +159,7 @@ class BaseProducer(metaclass=abc.ABCMeta):
         """
         self._name = name
         self._use_filter = use_filter
-        self.logger = LogManager(self._name).file(level)
+        self.logger = LogManager(f"{self._name}_producer").file(level)
         self.logger.warning('开始发布任务')
 
     def publish(self, msg: dict):
