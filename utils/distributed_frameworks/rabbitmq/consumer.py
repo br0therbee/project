@@ -26,8 +26,8 @@ class RabbitMQConsumer(BaseConsumer):
     def _consume(self):
         self.connection = PikaConnection().connection
         channel = self.connection.channel()
-        self._pool.submit(self.heartbeat)
-        channel.queue_declare(queue=self._name, durable=True)
+        queue = channel.queue_declare(queue=self._name, durable=True)
+        self._pool.submit(self.heartbeat, queue)
         channel.basic_qos(prefetch_count=self._concurrent_num)
         channel.basic_consume(
             queue=self._name,
@@ -49,7 +49,7 @@ class RabbitMQConsumer(BaseConsumer):
             except Exception as e:
                 self.logger.exception(f'RabbitMQ重新入队失败, 原因: \n{e}')
 
-    def heartbeat(self):
+    def heartbeat(self, queue):
         while True:
-            self.connection.process_data_events()
-            time.sleep(10)
+            self.logger.info(f'队列 {self._name} 中还有 {queue.method.message_count} 个任务')
+            time.sleep(60)
