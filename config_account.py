@@ -16,8 +16,16 @@ class _TencentVideo(object):
     password = config.get('TencentVideo', 'password')
 
 
-class Account(object):
+class _Videos(object):
     TencentVideo = _TencentVideo
+
+
+class _Hunter(object):
+    Videos = _Videos
+
+
+class Account(object):
+    Hunter = _Hunter
 
 
 account = Account()

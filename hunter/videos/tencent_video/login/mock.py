@@ -18,7 +18,7 @@ from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 
 from utils import LogManager, RequestManager
-from hunter.videos import account
+from config_account import account
 from hunter.videos.tencent_video.login.captcha import Captcha
 
 logger = LogManager('tencent_video_login').file()
@@ -31,8 +31,8 @@ class QQLogin(object):
     image_path.mkdir(parents=True, exist_ok=True)
 
     def __init__(self,
-                 username: str = account.TencentVideo.username,
-                 password: str = account.TencentVideo.password,
+                 username: str = account.Hunter.Videos.TencentVideo.username,
+                 password: str = account.Hunter.Videos.TencentVideo.password,
                  timeout: float = 60
                  ):
         self._username = username
