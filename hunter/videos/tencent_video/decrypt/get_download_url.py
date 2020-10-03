@@ -128,7 +128,7 @@ class DownloadURL(object):
             "guid": self._guid,
             "host": "v.qq.com",
             "isHLS": "1",
-            "logintoken": json.dumps(logintoken, separators=(',', ':')),
+            "logintoken": logintoken,
             "otype": "ojson",
             "platform": self._platform,
             "refer": "v.qq.com",
