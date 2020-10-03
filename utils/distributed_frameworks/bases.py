@@ -45,6 +45,7 @@ class BaseConsumer(metaclass=abc.ABCMeta):
         self._is_block = is_block
         self._time_periods = time_periods
         self.logger = LogManager(self._name).file(level)
+        self._count = 0
 
     @classmethod
     def joinall(cls):

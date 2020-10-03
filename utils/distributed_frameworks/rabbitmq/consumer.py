@@ -51,5 +51,10 @@ class RabbitMQConsumer(BaseConsumer):
 
     def heartbeat(self, queue):
         while True:
-            self.logger.info(f'队列 {self._name} 中还有 {queue.method.message_count} 个任务')
+            count = queue.method.message_count
+            if count != 0 or self._count == 60:
+                self.logger.info(f'队列 {self._name} 中还有 {queue.method.message_count} 个任务')
+                self._count = 0
+            else:
+                self._count += 1
             time.sleep(60)
