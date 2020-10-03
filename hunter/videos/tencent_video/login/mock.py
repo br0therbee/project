@@ -48,6 +48,7 @@ class QQLogin(object):
         options = webdriver.ChromeOptions()
         options.add_argument('--headless')
         options.add_argument('--start-maximized')
+        options.add_argument('--disable-dev-shm-usage')
         self.driver = webdriver.Chrome(executable_path=self._executable_path, options=options)
         self.wait = WebDriverWait(self.driver, self.timeout)
         self.driver.get(self.index_url)
