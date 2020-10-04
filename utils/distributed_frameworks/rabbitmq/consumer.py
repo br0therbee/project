@@ -2,8 +2,6 @@
 # @Author      : BrotherBe
 # @Time        : 2020/7/25 2:12
 # @Version     : Python 3.8.5
-import time
-from contextlib import suppress
 from multiprocessing import RLock
 
 from config import env
