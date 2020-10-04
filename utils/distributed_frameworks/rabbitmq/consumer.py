@@ -53,7 +53,7 @@ class RabbitMQConsumer(BaseConsumer):
 
     def show_message_count(self):
         with suppress(Exception):
-            api = f'http://{env.RabbitMQ.host}:15672/api/queues/{env.RabbitMQ.virtual_host}/test'
+            api = f'http://{env.RabbitMQ.host}:15672/api/queues/{env.RabbitMQ.virtual_host}/{self._name}'
             data = RequestManager(show_response=False).request(
                 'get', api, auth=(env.RabbitMQ.username, env.RabbitMQ.password)).json()
             persistent_count = data['messages_persistent']
