@@ -30,7 +30,7 @@ class RabbitMQConsumer(BaseConsumer):
     def _consume(self):
         channel = PikaConnection().connection.channel()
         channel.queue_declare(queue=self._name, durable=True)
-        circulate(sleep=60, is_block=False)(self.heartbeat)
+        circulate(sleep=60, is_block=False)(self.heartbeat)()
         channel.basic_qos(prefetch_count=self._concurrent_num)
         channel.basic_consume(
             queue=self._name,
