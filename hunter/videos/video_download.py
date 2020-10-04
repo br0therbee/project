@@ -21,7 +21,7 @@ def _video_download(provider, filter, download_type, params):
         update={"$set": {
             'download.status': DownloadStatus.downloading,
             'download.reason': '',
-            'time': time.strftime('%Y-%m-%d %H:%M:%S')
+            'download.time': time.strftime('%Y-%m-%d %H:%M:%S'),
         }}
     )
     record = col.find_one(filter)
@@ -53,7 +53,7 @@ def _video_download(provider, filter, download_type, params):
             update={"$set": {
                 'download.status': status,
                 'download.reason': reason,
-                'time': time.strftime('%Y-%m-%d %H:%M:%S')
+                'download.time': time.strftime('%Y-%m-%d %H:%M:%S'),
             }}
         )
 
@@ -68,7 +68,7 @@ def _video_download(provider, filter, download_type, params):
             update={"$set": {
                 'download.status': status,
                 'download.reason': reason,
-                'time': time.strftime('%Y-%m-%d %H:%M:%S')
+                'download.time': time.strftime('%Y-%m-%d %H:%M:%S'),
             }}
         )
         raise e

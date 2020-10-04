@@ -166,6 +166,6 @@ class TencentVideoService(BaseVideo):
                 update={'$set': {
                     'download.status': DownloadStatus.failure,
                     'download.reason': message,
-                    'time': time.strftime('%Y-%m-%d %H:%M:%S')
+                    'download.time': time.strftime('%Y-%m-%d %H:%M:%S'),
                 }}
             )

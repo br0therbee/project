@@ -85,9 +85,10 @@ class Check(object):
 
 
 class RequestManager(object):
-    def __init__(self, timeout: float = 30, times: int = 3):
+    def __init__(self, timeout: float = 30, times: int = 3, show_response: bool = True):
         self._timeout = timeout
         self._times = times
+        self._show_response = show_response
         self._session = requests.session()
         self._user_agent = random.choice(USER_AGENTS)
         # 请求结束关闭session连接
@@ -112,7 +113,7 @@ class RequestManager(object):
                     method, url, params, data, headers, cookies, files, auth, timeout,
                     allow_redirects, proxies, hooks, stream, verify, cert, json
                 )  # type: str, requests.Response
-                Response(resp, durations).show()
+                Response(resp, durations).show(self._show_response)
         except Exception as e:
             raise NetworkRequestException(e)
         return resp

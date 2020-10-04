@@ -22,16 +22,17 @@ class Response(object):
         self._response = response
         self._durations = durations
 
-    def show(self):
+    def show(self, show: bool = True):
         """
         展示响应痕迹
 
         Returns:
 
         """
-        traces = [f'\n请求消耗总时间: {self._durations}\n\t']
-        for history in [*self._response.history, self._response]:
-            duration = history.elapsed.total_seconds()
-            traces.append(f'{history.status_code}  {history.request.method}  {duration:.3f} s  '
-                          f'{len(history.content):,} bytes  {history.url}\n\t')
-        logger.debug(''.join(traces))
+        if show:
+            traces = [f'\n请求消耗总时间: {self._durations}\n\t']
+            for history in [*self._response.history, self._response]:
+                duration = history.elapsed.total_seconds()
+                traces.append(f'{history.status_code}  {history.request.method}  {duration:.3f} s  '
+                              f'{len(history.content):,} bytes  {history.url}\n\t')
+            logger.debug(''.join(traces))
