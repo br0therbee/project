@@ -9,6 +9,7 @@ from multiprocessing import RLock
 from config import env
 from .connections import PikaConnection
 from ..bases import BaseConsumer
+from ...decorators import circulate
 from ...network_request import RequestManager
 
 
@@ -29,7 +30,7 @@ class RabbitMQConsumer(BaseConsumer):
     def _consume(self):
         channel = PikaConnection().connection.channel()
         channel.queue_declare(queue=self._name, durable=True)
-        self._pool.submit(self.heartbeat)
+        circulate(sleep=60, is_block=False)(self.heartbeat)
         channel.basic_qos(prefetch_count=self._concurrent_num)
         channel.basic_consume(
             queue=self._name,
@@ -51,21 +52,14 @@ class RabbitMQConsumer(BaseConsumer):
             except Exception as e:
                 self.logger.exception(f'RabbitMQ重新入队失败, 原因: \n{e}')
 
-    def show_message_count(self):
-        with suppress(Exception):
-            api = f'http://{env.RabbitMQ.host}:15672/api/queues/{env.RabbitMQ.virtual_host}/{self._name}'
-            data = RequestManager(show_response=False).request(
-                'get', api, auth=(env.RabbitMQ.username, env.RabbitMQ.password)).json()
-            persistent_count = data['messages_persistent']
-            unacknowledged_count = data['messages_unacknowledged']
-            if unacknowledged_count or persistent_count or self._count == 0:
-                self.logger.info(f'队列 {self._name} 中还有 {persistent_count} 个任务')
-                self._count = 60
-            else:
-                self._count -= 1
-
     def heartbeat(self):
-        while True:
-            with self._pika_lock:
-                self.show_message_count()
-                time.sleep(60)
+        api = f'http://{env.RabbitMQ.host}:15672/api/queues/{env.RabbitMQ.virtual_host}/{self._name}'
+        data = RequestManager(show_response=False).request(
+            'get', api, auth=(env.RabbitMQ.username, env.RabbitMQ.password)).json()
+        persistent_count = data['messages_persistent']
+        unacknowledged_count = data['messages_unacknowledged']
+        if unacknowledged_count or persistent_count or self._count == 0:
+            self.logger.info(f'队列 {self._name} 中还有 {persistent_count} 个任务')
+            self._count = 60
+        else:
+            self._count -= 1

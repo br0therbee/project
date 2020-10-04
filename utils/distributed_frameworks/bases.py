@@ -36,7 +36,7 @@ class BaseConsumer(metaclass=abc.ABCMeta):
         self._function = function
         self._function_name = function.__name__
         self._concurrent_num = concurrent_num
-        self._pool = ThreadPoolExecutor(max_workers=self._concurrent_num + 1)
+        self._pool = ThreadPoolExecutor(max_workers=self._concurrent_num)
         self._times = times
         self._interval = 1 / min(fps, 1000000)
 
