@@ -2,9 +2,11 @@
 # @Author      : BrotherBe
 # @Time        : 2020/10/1 17:00
 # @Version     : Python 3.8.5
-__all__ = ['m3u8_download', 'ts_download', 'M3u8KeyException']
+__all__ = ['m3u8_download', 'ts_download', 'mp4_download',
+           'M3u8KeyException']
 
 from . import m3u8_
+from . import mp4
 from .m3u8_ import KeyException as M3u8KeyException
 
 
@@ -23,3 +25,9 @@ def ts_download(filepath: str, urls: list, *, keys: list = None, thread_num: int
                 chunk_size: int = 1 * 1024 * 1024, wipe_cache: bool = True):
     with m3u8_.Downloader(thread_num, headers) as md:
         return md.download(filepath, urls, keys=keys, chunk_size=chunk_size, wipe_cache=wipe_cache)
+
+
+def mp4_download(filepath: str, urls: list, *, thread_num: int = 10, headers: dict = None,
+                 chunk_size: int = 1 * 1024 * 1024, wipe_cache: bool = True):
+    with mp4.Downloader(thread_num, headers) as mp:
+        return mp.download(filepath, urls, chunk_size=chunk_size, wipe_cache=wipe_cache)

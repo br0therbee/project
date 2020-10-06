@@ -151,7 +151,7 @@ class RequestManager(object):
         cookies = []
         for cookie in self.cookiejar:
             cookies.append(f"{cookie.name}={cookie.value}; ")
-        return "".join(cookies)
+        return "".join(cookies).strip('; ')
 
     def close(self):
         self._session.close()

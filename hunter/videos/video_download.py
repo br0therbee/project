@@ -5,7 +5,7 @@
 import time
 
 from public import RabbitMQQueue
-from utils import RabbitMQConsumer, MongoDBManager, m3u8_download, remove_special_characters, LogManager
+from utils import RabbitMQConsumer, MongoDBManager, m3u8_download, remove_special_characters, LogManager, mp4_download
 from hunter.videos import DownloadStatus, DownloadType, get_storage_path, get_provider, Provider
 from hunter.videos.tencent_video.tencent_video_service import TencentVideoService
 
@@ -25,17 +25,21 @@ def _video_download(provider, filter, download_type, params):
         }}
     )
     record = col.find_one(filter)
-
+    filename = f"{remove_special_characters(record['name'])}_{record['video_id']}.{download_type}"
+    filepath = get_storage_path(provider) / filename
+    logger.info(f'下载路径: {filepath}')
     is_success = False
     failures = []
     status = DownloadStatus.failure
     try:
         if download_type == DownloadType.HLS:
-            filename = f"{remove_special_characters(record['name'])}_{record['video_id']}.{download_type}"
-            filepath = get_storage_path(provider) / filename
-            logger.info(f'下载路径: {filepath}')
             for param in params:
                 is_success, failures = m3u8_download(filepath, **param, chunk_size=1024)
+                if is_success:
+                    break
+        elif download_type == DownloadType.MP4:
+            for param in params:
+                is_success, failures = mp4_download(filepath, **param, chunk_size=1024)
                 if is_success:
                     break
         else:
