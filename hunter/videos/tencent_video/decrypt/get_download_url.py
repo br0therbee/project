@@ -234,7 +234,7 @@ class DownloadURL(object):
             "refer": self.play_url,
             "sdtfrom": self._sdtfrom,
             "tm": int(time.time()),
-            "unid": "13a4b862bc6611ea981ca042d48ad00a",
+            "unid": get_unid(),
             "vid": self.vid,
             "vt": vt
         }
