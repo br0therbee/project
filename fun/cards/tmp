@@ -1,0 +1,31 @@
+import abc
+
+
+class BaseRule(metaclass=abc.ABCMeta):
+
+    def force(self, first_player_cards: list = None, follow_player_cards: list = None) -> bool:
+        """
+        执行规则
+
+        Args:
+            first_player_cards: 首牌
+            follow_player_cards: 跟牌
+
+        Returns: 出牌是否符合规则
+
+        """
+
+
+class BaseOutRule(BaseRule):
+    """出牌规则"""
+
+
+class BaseFirstOutRule(BaseOutRule):
+    """首先出牌"""
+
+
+class FlingOutRule(BaseFirstOutRule):
+    """甩牌"""
+
+    def force(self, first_player_cards: list = None, follow_player_cards: list = None) -> bool:
+        pass
