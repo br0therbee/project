@@ -27,7 +27,16 @@ def circulate(sleep: int = 1, is_block: bool = True):
     flag = '<decorators circulate>'
 
     def _circulate(func):
-        prefix = f'{flag} <{type(func).__name__} {func.__qualname__}>'
+        if '__self__' in dir(func):
+            self_ = func.__self__
+            try:
+                cls_name = self_.__name__
+            except AttributeError:
+                cls_name = type(self_).__name__
+            func_name = f'{cls_name}.{func.__name__}'
+        else:
+            func_name = func.__qualname__
+        prefix = f'{flag} <{type(func).__name__} {func_name}>'
 
         @functools.wraps(func)
         def __circulate(*args, **kwargs):
