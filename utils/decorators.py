@@ -24,13 +24,21 @@ def circulate(sleep: int = 1, is_block: bool = True):
 
     """
 
+    flag = '<decorators circulate>'
+
     def _circulate(func):
+        prefix = f'{flag} <{type(func).__name__} {func.__qualname__}>'
+
         @functools.wraps(func)
         def __circulate(*args, **kwargs):
             def ___circulate():
                 while True:
-                    with suppress(Exception):
+                    logger.info(f'{prefix} is going to start!')
+                    try:
                         func(*args, **kwargs)
+                    except Exception as e:
+                        logger.exception(f'{flag} {e}')
+                    logger.info(f'{prefix} finished! Sleep {sleep} seconds!')
                     time.sleep(sleep)
 
             if is_block:
