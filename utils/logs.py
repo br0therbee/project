@@ -11,8 +11,8 @@ from logging.handlers import TimedRotatingFileHandler, BaseRotatingHandler
 from pathlib import Path
 from threading import RLock
 
-from .commons import is_subprocess
-from .patterns import FlyWeight
+from util.commons import is_subprocess
+from util.patterns import FlyWeight
 
 
 class _Formatter(Enum):
@@ -99,75 +99,94 @@ class _ColorStreamHandler(logging.StreamHandler):
 
 class LogManager(metaclass=FlyWeight):
     _lock = RLock()
+    _names = {}
 
-    def __init__(self, name: str = 'temp'):
+    def __init__(self,
+                 name: str = 'temp', level: int = _Level.debug.value,
+                 add_stream: bool = True, stream_level: int = None,
+                 add_file: bool = True, file_level: int = None,
+                 filename: str = None, folder_path: str = None, backup_count: int = 50):
         """
         日志管理器
-
         多进程下文件名必须添加进程ID, 否则文件会切片错误
-
-        Args:
-            name: 日志名
-
         """
         if is_subprocess():
             name = f"{name}_{os.getppid()}_{os.getpid()}"
-        self._name = name
-        self._logger = logging.getLogger(self._name)
-        self._logger.setLevel(_Level.debug.value)
-        self._types = {}
+        self._keys = {}
 
-    def stream(self, level: int = _Level.debug.value):
+        # 添加日志
+        self._name = self._get_name(name)
+        self._level = level
+        self.logger = logging.getLogger(self._name)
+        self.logger.setLevel(self._level)
+
+        # 添加控制台句柄
+        self._add_stream = add_stream
+        if self._add_stream:
+            self._stream_level = stream_level or self._level
+            self._stream()
+
+        # 添加文件句柄
+        self._add_file = add_file
+        if self._add_file:
+            self._file_level = file_level or self._level
+            self._backup_count = backup_count
+            self._path = self._get_path(filename or name, folder_path)
+            self._file()
+        # self.logger.critical(self._names)
+
+    def _get_name(self, name):
+        # REMIND: 同一日志名称但是不同日志等级, 会产生两个日志名称, 以防止相同日志名引发重复打印问题
+        if name in self._names:
+            name_ = self._names[name][-1].rsplit('_', 1)
+            if len(name_) == 2:
+                stem, suffix = name_
+                try:
+                    suffix = int(suffix)
+                except ValueError:
+                    stem = name
+                    suffix = 0
+            else:
+                stem = name
+                suffix = 0
+            self._names[name].append(f'{stem}_{suffix + 1}')
+        else:
+            self._names[name] = [name]
+        return self._names[name][-1]
+
+    def _get_path(self, filename, folder_path):
+        if not filename.endswith('log'):
+            filename = f'{filename}.log'
+        self._filename = filename
+        self._folder_path = folder_path or Path(Path(__file__).absolute().root) / 'pythonlogs'
+        self._folder_path.mkdir(parents=True, exist_ok=True)
+        return self._folder_path / self._filename
+
+    def _stream(self):
         """
         添加控制台日志
-
-        Args:
-            level: 日志级别
-
         Returns:
-
         """
-        return self.__add_a_handler(_ColorStreamHandler, level=level, formatter=_Formatter.stream.value)
+        self.__add_a_handler(_ColorStreamHandler, level=self._stream_level, formatter=_Formatter.stream.value)
 
-    def file(self, level: int = _Level.debug.value, filename: str = None,
-             folder_path: str = None, backup_count: int = 50, add_stream: bool = True):
+    def _file(self):
         """
         添加文件日志
-
-        Args:
-            level: 日志级别
-            filename: 文件名
-            folder_path: 文件夹路径
-            backup_count: 文件个数
-            add_stream: 添加控制台日志
-
         Returns:
-
         """
-        if add_stream:
-            self.stream(level)
-        return self._add_file_handler(filename, folder_path, backup_count)
+        self.__add_a_handler(TimedRotatingFileHandler, level=self._file_level, path=self._path,
+                             formatter=_Formatter.file.value, backup_count=self._backup_count)
 
-    def _add_file_handler(self, filename: str = None, folder_path: str = None, backup_count: int = 50):
-        if folder_path is None:
-            folder_path = Path(Path(__file__).absolute().root) / 'pythonlogs'
-        folder_path.mkdir(parents=True, exist_ok=True)
-        if filename is None:
-            filename = f'{self._name}.log'
-        pathname = folder_path / filename
-        return self.__add_a_handler(TimedRotatingFileHandler, level=_Level.debug.value, pathname=pathname,
-                                    formatter=_Formatter.file.value, backup_count=backup_count)
-
-    def __add_a_handler(self, handler_type: type, level: int = _Level.debug.value, formatter: logging.Formatter = None,
-                        pathname: str = None, backup_count: int = 50):
+    def __add_a_handler(self, handler_type: type, level: int = _Level.debug.value,
+                        formatter: logging.Formatter = None, path: str = None, backup_count: int = 50):
         with self._lock:
-            if handler_type not in self._types:
+            key = handler_type
+            if key not in self._keys:
                 if issubclass(handler_type, _ColorStreamHandler):
                     handler = _ColorStreamHandler()
                 elif issubclass(handler_type, BaseRotatingHandler):
-                    handler = TimedRotatingFileHandler(pathname, when='D', backupCount=backup_count, encoding="utf-8")
+                    handler = TimedRotatingFileHandler(path, when='D', backupCount=backup_count, encoding="utf-8")
                 handler.setLevel(level)
                 handler.setFormatter(formatter)
-                self._logger.addHandler(handler)
-                self._types[handler_type] = handler
-            return self._logger
+                self.logger.addHandler(handler)
+                self._keys[key] = handler
