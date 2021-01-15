@@ -103,6 +103,7 @@ class LogManager(metaclass=FlyWeight):
 
     def __init__(self,
                  name: str = 'temp', level: int = _Level.debug.value,
+                 *,
                  add_stream: bool = True, stream_level: int = None,
                  add_file: bool = True, file_level: int = None,
                  filename: str = None, folder_path: str = None, backup_count: int = 50):
